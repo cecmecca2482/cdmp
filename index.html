@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CDMP Study Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f2ede4;
+    --surface: #ffffff;
+    --border: #e0d8cc;
+    --text: #1c1814;
+    --text-secondary: #7a7060;
+    --text-muted: #b0a898;
+    --accent: #c94f1e;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4rem 2rem 6rem;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body > * { position: relative; z-index: 1; }
+
+  header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    animation: fade-up 0.5s ease forwards;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--accent);
+    padding: 4px 14px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  header p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    max-width: 440px;
+    line-height: 1.6;
+  }
+
+  .divider {
+    width: 40px;
+    height: 2px;
+    background: var(--accent);
+    margin: 18px auto 0;
+    opacity: 0.4;
+  }
+
+  /* Section label */
+  .section-label {
+    width: 100%;
+    max-width: 900px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    animation: fade-up 0.5s 0.1s ease forwards;
+    opacity: 0;
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1px;
+    width: 100%;
+    max-width: 900px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+    animation: fade-up 0.5s 0.15s ease forwards;
+    opacity: 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .card {
+    background: var(--surface);
+    padding: 1.75rem 1.75rem 1.5rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: background 0.18s ease;
+    position: relative;
+  }
+
+  .card:hover { background: #faf7f2; }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .card-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: #fdf0eb;
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  .card-tag.coming-soon {
+    color: var(--text-muted);
+    background: #f5f0e8;
+  }
+
+  .card-arrow {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 15px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .card:hover .card-arrow {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    transform: rotate(-45deg);
+  }
+
+  .card.disabled .card-arrow {
+    opacity: 0.3;
+  }
+
+  .card.disabled:hover .card-arrow {
+    background: none;
+    color: var(--text-muted);
+    border-color: var(--border);
+    transform: none;
+  }
+
+  .card-chapter {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    letter-spacing: -0.2px;
+  }
+
+  .card.disabled .card-title { color: var(--text-muted); }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  .card.disabled .card-desc { color: var(--text-muted); }
+
+  /* Coming soon placeholder style */
+  .card.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* Footer */
+  footer {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 1rem;
+    animation: fade-up 0.5s 0.3s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fade-up {
+    0%   { opacity: 0; transform: translateY(12px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">CDMP Exam Prep</div>
+  <h1>CDMP Study Hub</h1>
+  <p>Study tools for the DAMA DMBOK2 — built chapter by chapter as you work through the material.</p>
+  <div class="divider"></div>
+</header>
+
+<div class="section-label">Vocabulary Flashcards</div>
+
+<div class="grid">
+
+  <a class="card" href="cdmp-chpt1-flashcards.html">
+    <div class="card-top">
+      <span class="card-tag">Available</span>
+      <div class="card-arrow"><i class="ti ti-arrow-up-right"></i></div>
+    </div>
+    <div class="card-chapter">Chapter 1</div>
+    <div class="card-title">Data Management</div>
+    <div class="card-desc">32 vocabulary terms covering the DIKW hierarchy, data types, management principles, and the DAMA framework. AI-evaluated answers.</div>
+  </a>
+
+  <div class="card disabled">
+    <div class="card-top">
+      <span class="card-tag coming-soon">Coming soon</span>
+      <div class="card-arrow"><i class="ti ti-arrow-up-right"></i></div>
+    </div>
+    <div class="card-chapter">Chapter 2</div>
+    <div class="card-title">Data Handling Ethics</div>
+    <div class="card-desc">Ethical principles, privacy law, data culture, and the relationship between ethics and governance.</div>
+  </div>
+
+  <div class="card disabled">
+    <div class="card-top">
+      <span class="card-tag coming-soon">Coming soon</span>
+      <div class="card-arrow"><i class="ti ti-arrow-up-right"></i></div>
+    </div>
+    <div class="card-chapter">Chapter 3</div>
+    <div class="card-title">Data Governance</div>
+    <div class="card-desc">Governance frameworks, roles, responsibilities, policies, and the organizational structures that enable data management.</div>
+  </div>
+
+  <div class="card disabled">
+    <div class="card-top">
+      <span class="card-tag coming-soon">Coming soon</span>
+      <div class="card-arrow"><i class="ti ti-arrow-up-right"></i></div>
+    </div>
+    <div class="card-chapter">Chapter 4</div>
+    <div class="card-title">Data Architecture</div>
+    <div class="card-desc">Enterprise data architecture, blueprints, models, and the relationship between data architecture and enterprise architecture.</div>
+  </div>
+
+  <div class="card disabled">
+    <div class="card-top">
+      <span class="card-tag coming-soon">Coming soon</span>
+      <div class="card-arrow"><i class="ti ti-arrow-up-right"></i></div>
+    </div>
+    <div class="card-chapter">Chapter 5</div>
+    <div class="card-title">Data Modeling & Design</div>
+    <div class="card-desc">Conceptual, logical, and physical data models, normalization, and data modeling best practices.</div>
+  </div>
+
+  <div class="card disabled">
+    <div class="card-top">
+      <span class="card-tag coming-soon">Coming soon</span>
+      <div class="card-arrow"><i class="ti ti-arrow-up-right"></i></div>
+    </div>
+    <div class="card-chapter">Chapters 6–14</div>
+    <div class="card-title">Remaining Knowledge Areas</div>
+    <div class="card-desc">Storage, Security, Integration, Documents, Reference & Master Data, Warehousing, Metadata, and Data Quality.</div>
+  </div>
+
+</div>
+
+<footer>Built with Claude &nbsp;·&nbsp; cecmecca2482.github.io/cdmp</footer>
+
+</body>
+</html>
