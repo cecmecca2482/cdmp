@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CDMP Chapter 3 — Vocabulary Flashcards</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f2ede4;
+    --text: #1c1814;
+    --text-muted: #7a7060;
+    --border: #d8d0c4;
+    --accent: #c94f1e;
+
+    /* Card colors — vivid, distinct */
+    --c0-bg: #fff8f0; --c0-border: #e8c4a0; --c0-cat: #c94f1e;
+    --c1-bg: #f0f7ff; --c1-border: #a0c4e8; --c1-cat: #1a5fa8;
+    --c2-bg: #f2fff0; --c2-border: #a0d8a0; --c2-cat: #1a7a3a;
+    --c3-bg: #fdf0ff; --c3-border: #d4a0e8; --c3-cat: #7a1aa8;
+    --c4-bg: #fffff0; --c4-border: #d8d890; --c4-cat: #7a7a00;
+
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #86efac;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fca5a5;
+    --skip-bg: #fffbeb;
+    --skip-border: #fcd34d;
+    --skip-color: #92400e;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* Subtle texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body > * { position: relative; z-index: 1; }
+
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: fade-up 0.5s ease forwards;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--accent);
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 14px;
+  }
+
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    max-width: 420px;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    animation: fade-up 0.5s 0.08s ease forwards;
+    opacity: 0;
+  }
+
+  .stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 14px;
+  }
+
+  .stat-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .stat-dot.total     { background: #bbb; }
+  .stat-dot.correct   { background: var(--green); }
+  .stat-dot.incorrect { background: var(--red); }
+  .stat-dot.skipped   { background: #f59e0b; }
+  .stat-pill strong   { color: var(--text); }
+
+  /* Progress */
+  .progress-wrap {
+    width: 100%;
+    max-width: 1100px;
+    margin-bottom: 1.75rem;
+    animation: fade-up 0.5s 0.12s ease forwards;
+    opacity: 0;
+  }
+
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .progress-track {
+    height: 6px;
+    background: #e0d8ce;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #e8a020);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* Grid */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 1100px;
+    animation: fade-up 0.5s 0.18s ease forwards;
+    opacity: 0;
+  }
+
+  /* Card flip */
+  .card-wrap { perspective: 1200px; height: 230px; }
+
+  .card-inner {
+    position: relative;
+    width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-wrap.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-front, .card-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 18px;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+  }
+
+  /* Color variants for front */
+  .card-front.c0 { background: var(--c0-bg); border-color: var(--c0-border); }
+  .card-front.c1 { background: var(--c1-bg); border-color: var(--c1-border); }
+  .card-front.c2 { background: var(--c2-bg); border-color: var(--c2-border); }
+  .card-front.c3 { background: var(--c3-bg); border-color: var(--c3-border); }
+  .card-front.c4 { background: var(--c4-bg); border-color: var(--c4-border); }
+
+  .card-wrap:hover .card-front {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1), 0 16px 40px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+  }
+
+  .card-wrap.flipped:hover .card-front { transform: none; }
+
+  .card-peek-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(0,0,0,0.06);
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    letter-spacing: 0.5px;
+  }
+
+  .card-peek-btn:hover { background: rgba(0,0,0,0.12); color: var(--text); }
+
+  .card-back.peek {
+    background: #fffdf8;
+    border-color: #e8d8a0;
+  }
+
+  .peek .result-icon { background: #fef9e7; color: #b07800; }
+  .peek .result-label { color: #b07800; }
+  .peek .result-feedback { font-style: normal; color: var(--text-secondary); }
+
+  .card-front-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.1rem 1.1rem 0.5rem;
+    gap: 6px;
+  }
+
+  .card-category {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .c0 .card-category { color: var(--c0-cat); }
+  .c1 .card-category { color: var(--c1-cat); }
+  .c2 .card-category { color: var(--c2-cat); }
+  .c3 .card-category { color: var(--c3-cat); }
+  .c4 .card-category { color: var(--c4-cat); }
+
+  .card-term {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .card-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    font-style: italic;
+  }
+
+  /* Input area */
+  .card-input-area {
+    padding: 0.65rem 0.85rem 0.75rem;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border-top: 1.5px solid;
+    background: rgba(255,255,255,0.6);
+  }
+
+  .c0 .card-input-area { border-color: var(--c0-border); }
+  .c1 .card-input-area { border-color: var(--c1-border); }
+  .c2 .card-input-area { border-color: var(--c2-border); }
+  .c3 .card-input-area { border-color: var(--c3-border); }
+  .c4 .card-input-area { border-color: var(--c4-border); }
+
+  .card-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.4;
+    resize: none;
+    height: 34px;
+  }
+
+  .card-input::placeholder { color: #bbb; }
+
+  .card-submit {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    border: none;
+    background: var(--text);
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.1s, background 0.15s;
+    font-weight: 700;
+  }
+
+  .card-submit:hover { background: var(--accent); transform: scale(1.08); }
+  .card-submit:active { transform: scale(0.95); }
+  .card-submit:disabled { opacity: 0.3; cursor: not-allowed; transform: none; background: var(--text); }
+
+  /* Back of card */
+  .card-back {
+    transform: rotateY(180deg);
+    padding: 1.1rem;
+    justify-content: space-between;
+  }
+
+  .card-back.correct   { background: var(--green-bg);  border-color: var(--green-border); }
+  .card-back.incorrect { background: var(--red-bg);    border-color: var(--red-border); }
+  .card-back.skipped   { background: var(--skip-bg);   border-color: var(--skip-border); }
+
+  .result-header { display: flex; align-items: center; gap: 8px; }
+
+  .result-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; flex-shrink: 0;
+  }
+
+  .correct   .result-icon { background: #dcfce7; color: var(--green); }
+  .incorrect .result-icon { background: #fee2e2; color: var(--red); }
+  .skipped   .result-icon { background: #fef3c7; color: #92400e; }
+
+  .result-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .correct   .result-label { color: var(--green); }
+  .incorrect .result-label { color: var(--red); }
+  .skipped   .result-label { color: #92400e; }
+
+  .result-definition {
+    font-size: 12px;
+    color: #3a3530;
+    line-height: 1.6;
+    flex: 1;
+    margin: 8px 0;
+    overflow-y: auto;
+  }
+
+  .result-feedback {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.5;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    padding-top: 7px;
+  }
+
+  .card-retry {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 5px 11px;
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-top: 7px;
+    transition: background 0.15s, color 0.15s;
+    align-self: flex-start;
+  }
+
+  .card-retry:hover { background: #eee; color: var(--text); }
+
+  /* Footer */
+  .footer {
+    width: 100%;
+    max-width: 1100px;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    animation: fade-up 0.5s 0.25s ease forwards;
+    opacity: 0;
+  }
+
+  .reset-btn {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 22px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .reset-btn:hover { background: var(--text); color: #fff; border-color: var(--text); }
+
+  @keyframes fade-up {
+    0%   { opacity: 0; transform: translateY(14px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">CDMP Study · DMBOK2 Chapter 3</div>
+  <h1>Data Governance Vocabulary</h1>
+  <p>Type your definition and press Enter — AI evaluates whether you've captured the right concept.</p>
+</header>
+
+<div class="stats-bar" id="stats-bar">
+  <div class="stat-pill"><div class="stat-dot total"></div><strong id="stat-total">0</strong>&nbsp;total</div>
+  <div class="stat-pill"><div class="stat-dot correct"></div><strong id="stat-correct">0</strong>&nbsp;correct</div>
+  <div class="stat-pill"><div class="stat-dot incorrect"></div><strong id="stat-incorrect">0</strong>&nbsp;incorrect</div>
+  <div class="stat-pill"><div class="stat-dot skipped"></div><strong id="stat-skipped">0</strong>&nbsp;skipped</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-labels">
+    <span>Progress</span>
+    <span id="progress-label">0 / 0 answered</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="card-grid" id="card-grid"></div>
+
+<div class="footer">
+  <button class="reset-btn" onclick="resetAll()">↺ Reset all cards</button>
+</div>
+
+<script>
+var TERMS = [
+  { term: "Data Governance", category: "Session 1 — Foundations", hint: "Authority over data assets", definition: "The exercise of authority, control, and shared decision-making over the management of data assets. Establishes who can take what actions with what data, under what circumstances, using what methods." },
+  { term: "Data Governance Program", category: "Session 1 — Foundations", hint: "The formal initiative", definition: "A formal initiative that defines, implements, and sustains the organizational structures, policies, processes, and standards needed to manage data as a strategic asset." },
+  { term: "Data Steward", category: "Session 1 — Foundations", hint: "The accountable domain owner", definition: "A person assigned accountability and responsibility for data management within a specific subject area or business domain. Ensures the quality, fitness, and appropriate use of data assets in their domain." },
+  { term: "Data Owner", category: "Session 1 — Foundations", hint: "Business accountability for data", definition: "A business executive or senior manager who has accepted accountability for the quality and fitness for purpose of a specific data asset or domain. Typically a business role, not a technical one." },
+  { term: "Data Governance Council", category: "Session 1 — Foundations", hint: "The governing body", definition: "A cross-functional body of senior stakeholders responsible for making data governance decisions, resolving escalated issues, and ensuring alignment between data management and business strategy." },
+  { term: "Data Policy", category: "Session 2 — Structures", hint: "The rules for data", definition: "A documented set of principles, expectations, and rules that guide how data is collected, managed, used, shared, and protected across an organization." },
+  { term: "Data Standard", category: "Session 2 — Structures", hint: "Required format or definition", definition: "A specific, measurable requirement for how data should be defined, formatted, stored, or managed. More prescriptive than a policy — defines the exact specification that must be followed." },
+  { term: "Data Principle", category: "Session 2 — Structures", hint: "A guiding belief about data", definition: "A fundamental statement that guides decision-making about data management. Principles are less specific than policies but establish the values and beliefs that policies are built upon." },
+  { term: "Metadata Management", category: "Session 2 — Structures", hint: "Governing data about data", definition: "The governance and management of metadata — the information that describes data assets — including business definitions, data lineage, data quality rules, and technical specifications." },
+  { term: "Data Lineage", category: "Session 2 — Structures", hint: "Where data came from and where it went", definition: "A record of the origin, movement, transformation, and consumption of data through systems and processes. Supports data quality, compliance, and impact analysis." },
+  { term: "Business Glossary", category: "Session 2 — Structures", hint: "The shared vocabulary", definition: "A collection of business terms and their definitions, agreed upon across the organization, that ensures consistent understanding and use of data across departments and systems." },
+  { term: "Data Catalog", category: "Session 2 — Structures", hint: "An inventory of data assets", definition: "A centralized inventory of an organization's data assets that provides metadata, lineage, quality information, and ownership details, enabling users to find and understand available data." },
+  { term: "Data Governance Operating Model", category: "Session 3 — Operating Models", hint: "How governance is organized", definition: "The organizational structure that defines how data governance activities are carried out — including roles, responsibilities, decision rights, and the relationship between central governance and business domains." },
+  { term: "Centralized Governance", category: "Session 3 — Operating Models", hint: "Top-down governance model", definition: "A data governance model in which a central team or authority makes data management decisions and sets standards for the entire organization. Provides consistency but may lack business context." },
+  { term: "Federated Governance", category: "Session 3 — Operating Models", hint: "Distributed governance model", definition: "A data governance model in which governance responsibilities are distributed across business domains or units, with a central body setting common standards and resolving conflicts." },
+  { term: "Data Governance Maturity", category: "Session 3 — Operating Models", hint: "How advanced your governance is", definition: "The degree to which an organization has developed and implemented formal, repeatable data governance practices. Measured against maturity models that describe progression from ad hoc to optimized." },
+  { term: "Decision Rights", category: "Session 3 — Operating Models", hint: "Who gets to decide", definition: "The formal assignment of authority to make specific types of data management decisions. A core component of governance design — defining who can approve data definitions, access, changes, and policies." },
+  { term: "RACI Matrix", category: "Session 3 — Operating Models", hint: "Responsible, Accountable, Consulted, Informed", definition: "A responsibility assignment matrix used in data governance to clarify roles — identifying who is Responsible, Accountable, Consulted, and Informed for each data governance activity or decision." },
+  { term: "Data Governance Charter", category: "Session 4 — Implementation", hint: "The foundational document", definition: "A formal document that establishes the authority, scope, objectives, structure, and guiding principles of a data governance program. Serves as the mandate for governance activities." },
+  { term: "Issue Management", category: "Session 4 — Implementation", hint: "Resolving data problems formally", definition: "The formal process for identifying, escalating, tracking, and resolving data-related issues — such as data quality problems, conflicting definitions, or policy violations." },
+  { term: "Data Governance Metrics", category: "Session 4 — Implementation", hint: "Measuring governance effectiveness", definition: "Quantitative and qualitative measures used to assess the effectiveness of data governance activities, including data quality scores, policy compliance rates, and stewardship activity levels." },
+  { term: "Regulatory Compliance", category: "Session 4 — Implementation", hint: "Meeting legal requirements", definition: "The adherence to laws, regulations, and industry standards that govern how data must be collected, stored, used, and protected. A key driver for data governance program investment." },
+  { term: "Data Governance Roadmap", category: "Session 4 — Implementation", hint: "The implementation plan", definition: "A phased plan for building and maturing a data governance program over time, identifying priorities, milestones, resources, and dependencies for governance capability development." },
+  { term: "Master Data Management", category: "Session 4 — Implementation", hint: "Governing core business entities", definition: "The processes, governance, policies, standards, and tools that consistently define and manage the critical data entities of an organization — such as customers, products, employees, and suppliers." },
+  { term: "Data Governance Framework", category: "Session 4 — Implementation", hint: "The overall governing structure", definition: "The combination of organizational structures, policies, standards, processes, and tools that together constitute how an organization governs its data assets." },
+  { term: "Stakeholder Engagement", category: "Session 4 — Implementation", hint: "Getting people on board", definition: "The process of identifying, communicating with, and building commitment among the people who are affected by or have influence over data governance outcomes. Critical for program success and adoption." }
+];
+var COLOR_CLASSES = ['c0','c1','c2','c3','c4'];
+var stats = { correct: 0, incorrect: 0, skipped: 0 };
+var answered = {};
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = TERMS.length;
+  document.getElementById('stat-correct').textContent = stats.correct;
+  document.getElementById('stat-incorrect').textContent = stats.incorrect;
+  document.getElementById('stat-skipped').textContent = stats.skipped;
+  var total = stats.correct + stats.incorrect + stats.skipped;
+  document.getElementById('progress-label').textContent = total + ' / ' + TERMS.length + ' answered';
+  document.getElementById('progress-fill').style.width = Math.round(total / TERMS.length * 100) + '%';
+}
+
+function buildCards() {
+  var grid = document.getElementById('card-grid');
+  grid.innerHTML = '';
+  stats = { correct: 0, incorrect: 0, skipped: 0 };
+  answered = {};
+  updateStats();
+
+  TERMS.forEach(function(term, idx) {
+    var colorClass = COLOR_CLASSES[idx % COLOR_CLASSES.length];
+    var wrap = document.createElement('div');
+    wrap.className = 'card-wrap';
+    wrap.id = 'card-' + idx;
+
+    wrap.innerHTML =
+      '<div class="card-inner">' +
+        '<div class="card-front ' + colorClass + '">' +
+          '<button class="card-peek-btn" id="peek-' + idx + '" title="Peek at definition">Peek</button>' +
+          '<div class="card-front-body">' +
+            '<div class="card-category">' + term.category + '</div>' +
+            '<div class="card-term">' + term.term + '</div>' +
+            '<div class="card-hint">' + term.hint + '</div>' +
+          '</div>' +
+          '<div class="card-input-area">' +
+            '<textarea class="card-input" id="input-' + idx + '" placeholder="Your definition..." rows="2"></textarea>' +
+            '<button class="card-submit" id="btn-' + idx + '" title="Submit (Enter)">&#9654;</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card-back" id="back-' + idx + '">' +
+          '<div class="result-header">' +
+            '<div class="result-icon" id="icon-' + idx + '"></div>' +
+            '<div class="result-label" id="label-' + idx + '"></div>' +
+          '</div>' +
+          '<div class="result-definition" id="def-' + idx + '"></div>' +
+          '<div class="result-feedback" id="feedback-' + idx + '"></div>' +
+          '<button class="card-retry" onclick="retryCard(' + idx + ')">&#8617; Try again</button>' +
+        '</div>' +
+      '</div>';
+
+    grid.appendChild(wrap);
+
+    document.getElementById('peek-' + idx).addEventListener('click', (function(i) {
+      return function(e) {
+        e.stopPropagation();
+        peekCard(i);
+      };
+    })(idx));
+
+    document.getElementById('input-' + idx).addEventListener('keydown', (function(i) {
+      return function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitAnswer(i); }
+      };
+    })(idx));
+
+    document.getElementById('btn-' + idx).addEventListener('click', (function(i) {
+      return function() { submitAnswer(i); };
+    })(idx));
+  });
+}
+
+async function submitAnswer(idx) {
+  var input = document.getElementById('input-' + idx);
+  var btn   = document.getElementById('btn-' + idx);
+  var answer = input.value.trim();
+
+  if (!answer) {
+    showResult(idx, 'skipped', 'You skipped this one — study the definition below.');
+    stats.skipped++;
+    answered[idx] = 'skipped';
+    updateStats();
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  try {
+    var term = TERMS[idx];
+    var prompt =
+      'You are evaluating a student\'s answer on a CDMP data management vocabulary flashcard.\n\n' +
+      'Term: "' + term.term + '"\n' +
+      'Correct definition: "' + term.definition + '"\n' +
+      'Student\'s answer: "' + answer + '"\n\n' +
+      'Evaluate whether the student captured the essential meaning. Minor wording differences are fine — focus on conceptual accuracy.\n\n' +
+      'Respond ONLY in this exact JSON format, no markdown, no backticks:\n' +
+      '{"result":"correct","feedback":"One short sentence, max 20 words, saying what they got right."}\n' +
+      'OR\n' +
+      '{"result":"incorrect","feedback":"One short sentence, max 20 words, on the key concept they missed."}';
+
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 120,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    var data = await response.json();
+    var text = data.content[0].text.trim().replace(/```json|```/g, '');
+    var parsed = JSON.parse(text);
+    var result = parsed.result === 'correct' ? 'correct' : 'incorrect';
+    showResult(idx, result, parsed.feedback);
+    stats[result]++;
+    answered[idx] = result;
+    updateStats();
+
+  } catch(e) {
+    // Fallback — smarter keyword match
+    var term = TERMS[idx];
+    var al = answer.toLowerCase();
+    var dl = term.definition.toLowerCase();
+    // Check meaningful words (3+ chars) from both definition and answer
+    var defWords = dl.split(/\W+/).filter(function(w) { return w.length >= 3; });
+    var ansWords = al.split(/\W+/).filter(function(w) { return w.length >= 3; });
+    // Count how many answer words appear in the definition
+    var hits = ansWords.filter(function(w) { return dl.indexOf(w) !== -1; }).length;
+    // Also count definition words found in the answer
+    var coverage = defWords.filter(function(w) { return al.indexOf(w) !== -1; }).length;
+    var coveragePct = defWords.length > 0 ? coverage / defWords.length : 0;
+    // Pass if good coverage OR enough answer words match
+    var result = (coveragePct >= 0.25 || hits >= 2) ? 'correct' : 'incorrect';
+    showResult(idx, result, 'AI unavailable — your answer matched ' + Math.round(coveragePct * 100) + '% of the key concepts.');
+    stats[result]++;
+    answered[idx] = result;
+    updateStats();
+  }
+}
+
+function showResult(idx, result, feedback) {
+  var wrap  = document.getElementById('card-' + idx);
+  var back  = document.getElementById('back-' + idx);
+  var icon  = document.getElementById('icon-' + idx);
+  var label = document.getElementById('label-' + idx);
+  var def   = document.getElementById('def-' + idx);
+  var fb    = document.getElementById('feedback-' + idx);
+
+  back.className = 'card-back ' + result;
+  wrap.className = 'card-wrap flipped';
+
+  if (result === 'correct')   { icon.textContent = '✓'; label.textContent = 'Correct'; }
+  else if (result === 'incorrect') { icon.textContent = '✗'; label.textContent = 'Not quite'; }
+  else                        { icon.textContent = '→'; label.textContent = 'Skipped'; }
+
+  def.textContent = TERMS[idx].definition;
+  fb.textContent  = feedback;
+}
+
+function peekCard(idx) {
+  var wrap  = document.getElementById('card-' + idx);
+  var back  = document.getElementById('back-' + idx);
+  var icon  = document.getElementById('icon-' + idx);
+  var label = document.getElementById('label-' + idx);
+  var def   = document.getElementById('def-' + idx);
+  var fb    = document.getElementById('feedback-' + idx);
+
+  // Don't peek if already answered
+  if (answered[idx]) return;
+
+  back.className = 'card-back peek';
+  wrap.className = 'card-wrap flipped';
+  icon.textContent = '👁';
+  label.textContent = 'Peek';
+  def.textContent = TERMS[idx].definition;
+  fb.textContent = 'Study this definition, then try again when you\'re ready.';
+}
+
+function retryCard(idx) {
+  var wrap  = document.getElementById('card-' + idx);
+  var input = document.getElementById('input-' + idx);
+  var btn   = document.getElementById('btn-' + idx);
+  var colorClass = COLOR_CLASSES[idx % COLOR_CLASSES.length];
+
+  wrap.className = 'card-wrap';
+  input.value = '';
+  btn.disabled = false;
+  btn.textContent = '▶';
+
+  if (answered[idx]) {
+    stats[answered[idx]] = Math.max(0, stats[answered[idx]] - 1);
+    delete answered[idx];
+    updateStats();
+  }
+}
+
+function resetAll() { buildCards(); }
+
+buildCards();
+</script>
+</body>
+</html>
