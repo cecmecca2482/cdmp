@@ -206,6 +206,33 @@
 
   .card-wrap.flipped:hover .card-front { transform: none; }
 
+  .card-peek-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(0,0,0,0.06);
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    letter-spacing: 0.5px;
+  }
+
+  .card-peek-btn:hover { background: rgba(0,0,0,0.12); color: var(--text); }
+
+  .card-back.peek {
+    background: #fffdf8;
+    border-color: #e8d8a0;
+  }
+
+  .peek .result-icon { background: #fef9e7; color: #b07800; }
+  .peek .result-label { color: #b07800; }
+  .peek .result-feedback { font-style: normal; color: var(--text-secondary); }
+
   .card-front-body {
     flex: 1;
     display: flex;
@@ -496,6 +523,7 @@ function buildCards() {
     wrap.innerHTML =
       '<div class="card-inner">' +
         '<div class="card-front ' + colorClass + '">' +
+          '<button class="card-peek-btn" id="peek-' + idx + '" title="Peek at definition">Peek</button>' +
           '<div class="card-front-body">' +
             '<div class="card-category">' + term.category + '</div>' +
             '<div class="card-term">' + term.term + '</div>' +
@@ -518,6 +546,13 @@ function buildCards() {
       '</div>';
 
     grid.appendChild(wrap);
+
+    document.getElementById('peek-' + idx).addEventListener('click', (function(i) {
+      return function(e) {
+        e.stopPropagation();
+        peekCard(i);
+      };
+    })(idx));
 
     document.getElementById('input-' + idx).addEventListener('keydown', (function(i) {
       return function(e) {
@@ -618,6 +653,25 @@ function showResult(idx, result, feedback) {
 
   def.textContent = TERMS[idx].definition;
   fb.textContent  = feedback;
+}
+
+function peekCard(idx) {
+  var wrap  = document.getElementById('card-' + idx);
+  var back  = document.getElementById('back-' + idx);
+  var icon  = document.getElementById('icon-' + idx);
+  var label = document.getElementById('label-' + idx);
+  var def   = document.getElementById('def-' + idx);
+  var fb    = document.getElementById('feedback-' + idx);
+
+  // Don't peek if already answered
+  if (answered[idx]) return;
+
+  back.className = 'card-back peek';
+  wrap.className = 'card-wrap flipped';
+  icon.textContent = '👁';
+  label.textContent = 'Peek';
+  def.textContent = TERMS[idx].definition;
+  fb.textContent = 'Study this definition, then try again when you\'re ready.';
 }
 
 function retryCard(idx) {
